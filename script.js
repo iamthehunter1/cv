@@ -178,9 +178,12 @@ const updateYear = () => {
 updateYear();
 
 // ============================================
-// CURSOR EFFECT (OPTIONAL - ADVANCED)
+// CURSOR EFFECT (OPTIONAL - ADVANCED) - OPTIMIZED
 // ============================================
 const createCursorEffect = () => {
+    // Only create on desktop with good performance
+    if (window.innerWidth < 1024) return;
+    
     const cursor = document.createElement('div');
     cursor.classList.add('custom-cursor');
     document.body.appendChild(cursor);
@@ -193,6 +196,7 @@ const createCursorEffect = () => {
     let mouseY = 0;
     let followerX = 0;
     let followerY = 0;
+    let isAnimating = false;
     
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -200,6 +204,11 @@ const createCursorEffect = () => {
         
         cursor.style.left = mouseX + 'px';
         cursor.style.top = mouseY + 'px';
+        
+        if (!isAnimating) {
+            isAnimating = true;
+            animateFollower();
+        }
     });
     
     const animateFollower = () => {
@@ -209,13 +218,15 @@ const createCursorEffect = () => {
         cursorFollower.style.left = followerX + 'px';
         cursorFollower.style.top = followerY + 'px';
         
-        requestAnimationFrame(animateFollower);
+        if (Math.abs(mouseX - followerX) > 0.5 || Math.abs(mouseY - followerY) > 0.5) {
+            requestAnimationFrame(animateFollower);
+        } else {
+            isAnimating = false;
+        }
     };
     
-    animateFollower();
-    
     // Expand cursor on hover
-    const hoverElements = document.querySelectorAll('a, button, .project-card, .skill-category, .achievement-card');
+    const hoverElements = document.querySelectorAll('a, button');
     hoverElements.forEach(element => {
         element.addEventListener('mouseenter', () => {
             cursor.classList.add('cursor-hover');
@@ -229,22 +240,34 @@ const createCursorEffect = () => {
     });
 };
 
-// Only create cursor effect on desktop
-if (window.innerWidth > 768) {
+// Only create cursor effect on desktop with good performance
+if (window.innerWidth > 1024 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     createCursorEffect();
 }
 
 // ============================================
-// PARALLAX EFFECT ON SCROLL
+// PARALLAX EFFECT ON SCROLL (OPTIMIZED)
 // ============================================
+let ticking = false;
+
 window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const parallaxElements = document.querySelectorAll('.hero-content');
-    
-    parallaxElements.forEach(element => {
-        const speed = 0.5;
-        element.style.transform = `translateY(${scrolled * speed}px)`;
-    });
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.hero-content');
+            
+            if (scrolled < window.innerHeight) {
+                parallaxElements.forEach(element => {
+                    const speed = 0.3;
+                    element.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            }
+            
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
 });
 
 // ============================================
