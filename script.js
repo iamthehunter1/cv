@@ -34,7 +34,7 @@ window.addEventListener('scroll', () => {
 // ============================================
 // ANIMATED COUNTER FOR STATS
 // ============================================
-const animateCounter = (element, target, duration = 2000) => {
+const animateCounter = (element, target, duration = 1500) => {
     let start = 0;
     const increment = target / (duration / 16);
     
@@ -90,27 +90,26 @@ document.querySelectorAll('.skill-progress').forEach(skill => {
 });
 
 // ============================================
-// SCROLL REVEAL ANIMATIONS
+// SCROLL REVEAL ANIMATIONS - SIMPLIFIED
 // ============================================
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            revealObserver.unobserve(entry.target);
         }
     });
 }, {
     threshold: 0.1
 });
 
-// Add reveal animation to sections
+// Add simplified reveal animation to sections
 const addRevealAnimation = () => {
     const elements = document.querySelectorAll('.section-title, .project-card, .skill-category, .achievement-card, .timeline-item, .about-text, .contact-item');
     
     elements.forEach(element => {
         element.style.opacity = '0';
-        element.style.transform = 'translateY(30px)';
-        element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        element.style.transition = 'opacity 0.4s ease-out';
         revealObserver.observe(element);
     });
 };
@@ -246,29 +245,9 @@ if (window.innerWidth > 1024 && !window.matchMedia('(prefers-reduced-motion: red
 }
 
 // ============================================
-// PARALLAX EFFECT ON SCROLL (OPTIMIZED)
+// PARALLAX EFFECT - DISABLED FOR PERFORMANCE
 // ============================================
-let ticking = false;
-
-window.addEventListener('scroll', () => {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            const scrolled = window.pageYOffset;
-            const parallaxElements = document.querySelectorAll('.hero-content');
-            
-            if (scrolled < window.innerHeight) {
-                parallaxElements.forEach(element => {
-                    const speed = 0.3;
-                    element.style.transform = `translateY(${scrolled * speed}px)`;
-                });
-            }
-            
-            ticking = false;
-        });
-        
-        ticking = true;
-    }
-});
+// Removed to prevent any alignment issues and improve performance
 
 // ============================================
 // TYPING EFFECT FOR HERO SUBTITLE (OPTIONAL)
